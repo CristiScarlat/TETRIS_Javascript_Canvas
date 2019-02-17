@@ -8,48 +8,86 @@ export default class Tetris extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            gameBoard: [
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-            ]
+            
         }
+        this.gameBoard = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ];
+        this.item =  {};
         this.canvas = null;
+        this.timer = null;
     }
 
-    componentDidMount(){
+    componentDidMount() {
+        document.addEventListener('keypress', this.handleKeypress);
+        document.addEventListener('keydown', this.handleKeypress);
         this.canvas = this.refs.canvas;
-        this.drawMatrix();
-        this.placeItemOnCanvas(items.L);
+        this.drawBoard();
+        this.generateItem();
+        this.timer = setInterval(() => {
+            this.moveItemOnCanvas(this.item, "ArrowDown");
+            this.drawBoard();
+        }, 500);        
     }
 
-    componentWillUpdate() {
-        this.drawMatrix();
+
+    handleKeypress = (e) => {
+        console.log(e.key)
+        switch(e.key){
+            case "ArrowUp":
+            console.log("up");
+            
+            break;
+            case "ArrowDown":
+            console.log("down");
+            this.moveItemOnCanvas(this.item, e.key)
+            break;
+            case "ArrowLeft":
+            console.log("<-");
+            break;
+            case "ArrowRight":
+            console.log("->");
+            break;
+            default:
+            break;
+        }
     }
 
-    drawMatrix = () => {
+    clearBoard = () => {
+        let board = this.gameBoard;
+        board.forEach(row => {
+            for(let col=0;col<this.canvas.width/25;col++){
+                row[col] = 0;
+            }
+        })
+        return board;
+    }
+
+    drawBoard = () => {
         let ctx = this.canvas.getContext('2d');
-        for(let raw=0; raw<this.canvas.height/25; raw++){
-            this.drawRect(ctx, raw);
+        for(let row=0; row<this.canvas.height/25; row++){
+            this.drawRect(ctx, row);
         }       
     }
 
-    drawRect = (context, raw) => {
+    drawRect = (context, row) => {
         for(let col=0; col<this.canvas.width/25; col++){
-            switch(this.state.gameBoard[raw][col]){
+            switch(this.gameBoard[row][col]){
                 case 0:
                 context.fillStyle = "white";
                 break;
@@ -59,21 +97,52 @@ export default class Tetris extends React.Component {
                 default:
                 context.fillStyle = "black";
             }
-            context.fillRect(col*25, raw*25, 25, 25);    
+            context.fillRect(col*25, row*25, 25, 25);    
         }
     }
     //TODO placeItemOnCanvas can receive as parameters , position coordinates also than the update of the screen is done by setState
-    placeItemOnCanvas = (item) => {
-        let newBoard = this.state.gameBoard;
-        for(let raw=0; raw<3; raw++){
+    generateItem = () => {
+        let itemsKeys = Object.keys(items);
+        let item = items[itemsKeys[Math.floor(Math.random() * Math.floor(itemsKeys.length))]]
+        let newBoard = this.gameBoard;
+        for(let row=0; row<4; row++){
             for(let col=0; col<3; col++){
-                newBoard[raw][col+4] = item[raw][col]
+                newBoard[row][col+4] = item[row][col]
             }
         }
-        this.setState({ gameBoard: newBoard})
+        let generatedItem = {
+            shape: item,
+            x: 4,
+            y: 0,
+            r: 0
+        }
+        this.gameBoard = newBoard;
+        this.item = generatedItem;      
     }
 
+    moveItemOnCanvas = (item, direction) => {
+        if(direction === "ArrowDown" && item.y >= (this.canvas.height/25)-4){
+            this.generateItem();
+            return;
+        }
+        let newBoard = this.gameBoard;
+        let newItem = item;
+        if(direction === "ArrowDown"){
+            newItem.y++;
+            for(let row=0; row<4; row++){
+                for(let col=0; col<3; col++){
+                    newBoard[newItem.y - 1][col + item.x] = 0;
+                    newBoard[row + newItem.y][col + newItem.x] = item.shape[row][col]
+                }
+            }          
+        }
+        this.gameBoard = newBoard;
+        this.item = newItem;
+    }
+
+
     render(){
+        console.log("render")
         return(
             <div>
                 <canvas ref="canvas" width={300} height={400} className="canvas"/>
