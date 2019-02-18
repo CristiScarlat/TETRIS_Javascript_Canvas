@@ -132,7 +132,13 @@ export default class Tetris extends React.Component {
             for(let row=0; row<4; row++){
                 for(let col=0; col<3; col++){
                     newBoard[newItem.y - 1][col + item.x] = 0;
-                    newBoard[row + newItem.y][col + newItem.x] = item.shape[row][col]
+                   /*if(newBoard[row + newItem.y][col + newItem.x] === 1){
+                        
+                        } else
+                   */
+                    
+                }
+                    newBoard[row + newItem.y][col + newItem.x] = item.shape[row][col];
                 }
             }          
         }
