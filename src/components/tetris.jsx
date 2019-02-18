@@ -40,32 +40,15 @@ export default class Tetris extends React.Component {
         this.drawBoard();
         this.generateItem();
         this.timer = setInterval(() => {
-            this.moveItemOnCanvas(this.item, "ArrowDown");
+            this.itemFall(this.item);
             this.drawBoard();
         }, 500);        
     }
 
 
     handleKeypress = (e) => {
-        console.log(e.key)
-        switch(e.key){
-            case "ArrowUp":
-            console.log("up");
-            
-            break;
-            case "ArrowDown":
-            console.log("down");
-            this.moveItemOnCanvas(this.item, e.key)
-            break;
-            case "ArrowLeft":
-            console.log("<-");
-            break;
-            case "ArrowRight":
-            console.log("->");
-            break;
-            default:
-            break;
-        }
+        console.log(e.key);
+        this.moveItemOnCanvas(this.item, e.key);
     }
 
     clearBoard = () => {
@@ -120,18 +103,47 @@ export default class Tetris extends React.Component {
         this.item = generatedItem;      
     }
 
-    moveItemOnCanvas = (item, direction) => {
-        if(direction === "ArrowDown" && item.y >= (this.canvas.height/25)-4){
+    checkForCollision = (item, direction) => {
+        console.log("check-collision",item, direction);
+        if(item.y < (this.canvas.height/25)-4){
+            if( (this.gameBoard[item.y + 4][item.x] === 1 && item.shape[3][0] === 1)||
+                (this.gameBoard[item.y + 4][item.x + 1] === 1 && item.shape[3][1] === 1)||
+                (this.gameBoard[item.y + 4][item.x + 2] === 1 && item.shape[3][2] === 1)||
+                (this.gameBoard[item.y + 4][item.x + 3] === 1 && item.shape[3][3] === 1)){
+                    return true;
+                }
+        }
+        
+            return false;
+    }
+
+    itemFall = (item) => {
+        if(this.checkForCollision(item) || item.y >= (this.canvas.height/25)-4){
             this.generateItem();
             return;
         }
         let newBoard = this.gameBoard;
         let newItem = item;
+        newItem.y++;
+        for(let row=0; row<4; row++){
+            for(let col=0; col<3; col++){
+                newBoard[newItem.y - 1][col + item.x] = 0;
+                newBoard[row + newItem.y][col + newItem.x] = item.shape[row][col]             
+            }
+        }          
+        this.gameBoard = newBoard;
+        this.item = newItem;
+    }
+
+    moveItemOnCanvas = (item, direction) => {
+        let newBoard = this.gameBoard;
+            let newItem = item;
         if(direction === "ArrowDown"){
             newItem.y++;
             for(let row=0; row<4; row++){
                 for(let col=0; col<3; col++){
                     newBoard[newItem.y - 1][col + item.x] = 0;
+<<<<<<< Updated upstream
                    /*if(newBoard[row + newItem.y][col + newItem.x] === 1){
                         
                         } else
@@ -139,6 +151,18 @@ export default class Tetris extends React.Component {
                     
                 }
                     newBoard[row + newItem.y][col + newItem.x] = item.shape[row][col];
+=======
+                    newBoard[row + newItem.y][col + newItem.x] = item.shape[row][col]             
+                }
+            }          
+        }
+        if(direction === "ArrowRight"){
+            newItem.x++;
+            for(let row=0; row<4; row++){
+                for(let col=0; col<3; col++){
+                    newBoard[newItem.y - 1][col + item.x - 1] = 0;
+                    newBoard[row + newItem.y][col + newItem.x] = item.shape[row][col]             
+>>>>>>> Stashed changes
                 }
             }          
         }
