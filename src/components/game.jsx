@@ -11,6 +11,7 @@ export default class Game extends React.Component {
         }
         this.canvas = null;
         this.tetris = new Tetris();
+        this.start = 0;
     }
 
     componentDidMount() {
@@ -37,8 +38,18 @@ export default class Game extends React.Component {
         this.tetris.showTable().forEach((row, index) => {
             this.drawRect(ctx, row, index);
         }) 
+        this.step(120);
         requestAnimationFrame(this.update);     
     }
+
+    step = (timestamp) => {
+        this.start++;
+        let progress = timestamp - this.start;
+        if (progress  === 0) {
+            this.start = 0;
+            this.tetris.moveItemUp();
+        }
+      }
 
     drawRect = (context, row, index) => {
         for(let col=0; col<row.length; col++){
@@ -52,7 +63,7 @@ export default class Game extends React.Component {
                 default:
                 context.fillStyle = "black";
             }           
-            context.fillRect(col*25, index*25, 25, 25);
+        context.fillRect(col*25, index*25, 25, 25);
         }
     }
 
