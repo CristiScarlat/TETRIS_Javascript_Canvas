@@ -19,8 +19,7 @@ export default class Game extends React.Component {
         document.addEventListener('keydown', this.handleKeypress);
         this.canvas = this.refs.canvas;
         this.tetris.generateItem();
-        this.tetris.placeItemOnBoard({x: 0, y: 0, r: 0});
-        this.tetris.showTable();  
+        this.tetris.placeItemOnBoard({x: 0, y: 0, r: 0});  
         this.startLoop();
     }
     componentWillUnmount(){
@@ -35,7 +34,7 @@ export default class Game extends React.Component {
 
     update = () => {
         let ctx = this.canvas.getContext('2d');
-        this.tetris.showTable().forEach((row, index) => {
+        this.tetris.gameBoard.forEach((row, index) => {
             this.drawRect(ctx, row, index);
         }) 
         this.step(120);
@@ -47,7 +46,7 @@ export default class Game extends React.Component {
         let progress = timestamp - this.start;
         if (progress  === 0) {
             this.start = 0;
-            this.tetris.moveItemUp();
+            this.tetris.moveItemDown();
         }
       }
 
@@ -70,7 +69,7 @@ export default class Game extends React.Component {
     handleKeypress = (e) => {
         switch(e.key){
             case "ArrowDown":
-                this.tetris.moveItemUp();
+                this.tetris.moveItemDown();
                 break;
             case "ArrowRight":
                 this.tetris.moveItemRight();
