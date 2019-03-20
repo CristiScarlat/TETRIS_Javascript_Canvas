@@ -1,47 +1,34 @@
-import {items, gameBoard} from './tetrisItems';
+import { items, gameBoard } from './tetrisItems';
 
 
 export class Tetris {
-    constructor(){
+    constructor() {
         this.gameBoard = gameBoard;
-        this.item =  {};
+        this.item = {};
     }
 
     deleteItemFromBoard = () => {
         this.item.shape.forEach((row, index) => {
-            for(let col=0; col<row.length; col++){ 
-                if(row[col]){
-                    this.gameBoard[index + this.item.y][col + this.item.x] = 0;   
-                }                                     
+            for (let col = 0; col < row.length; col++) {
+                if (row[col]) {
+                    this.gameBoard[index + this.item.y][col + this.item.x] = 0;
+                }
             }
         })
     }
 
-    placeItemOnBoard = (position) => { 
-        let item = position;
-        this.deleteItemFromBoard();
-        if(this.checkCollision(position)){
-            item = this.item;
-            
-            this.item.shape.forEach((row, index) => {
-                for(let col=0; col<row.length; col++){ 
-                    if(row[col]){
-                        this.gameBoard[index + item.y][col + item.x] = row[col]; 
-                    }                                      
-                }
-            })
-            this.generateItem();
-            return;
-        }  
+    placeItemOnBoard = (position) => {
+        let itemPosition = position;
         this.item.shape.forEach((row, index) => {
-            for(let col=0; col<row.length; col++){ 
-                if(row[col]){
-                    this.gameBoard[index + item.y][col + item.x] = row[col]; 
-                }                                      
+            for (let col = 0; col < row.length; col++) {
+                if (row[col]) {
+                    this.gameBoard[index + itemPosition.y][col + itemPosition.x] = row[col];
+                }
             }
         })
-        this.item.x = item.x;
-        this.item.y = item.y;
+
+        this.item.x = itemPosition.x;
+        this.item.y = itemPosition.y;
     }
 
     generateItem = () => {
@@ -49,35 +36,48 @@ export class Tetris {
         let item = items[itemsKeys[Math.floor(Math.random() * Math.floor(itemsKeys.length))]]
         let generatedItem = {
             shape: item,
-            x: 0,
-            y: 0,
+            x: this.gameBoard[0].length/2 - 1,
+            y: -1,
             r: 0
         }
-        this.item = generatedItem;      
+        this.item = generatedItem;
     }
 
     checkCollision = (position) => {
-        if((position.y + this.item.shape.length - 1) >= this.gameBoard.length)return true; 
+        if ((position.y + this.item.shape.length - 1) >= this.gameBoard.length) return true;
         let collision = false;
+        this.deleteItemFromBoard();
         this.item.shape.forEach((row, index) => {
-            for(let col=0; col<row.length; col++){ 
-                if(row[col] > 0){
-                    collision |= this.gameBoard[index + position.y][col + position.x] > 0;  
-                }                                                 
+            for (let col = 0; col < row.length; col++) {
+                if (row[col] > 0) {
+                    collision |= (this.gameBoard[index + position.y][col + position.x] > 0) || col + position.x < 0 || col + position.x > this.gameBoard[0].length-1;
+                }
             }
-        })
+        })         
         return collision;
     }
 
-    moveItemDown = () => {                
-        this.placeItemOnBoard({x: this.item.x, y: this.item.y + 1, r: this.item.r});
+    moveItemDown = () => {        
+        if (this.checkCollision({ x: this.item.x, y: this.item.y + 1, r: this.item.r })) {
+            this.placeItemOnBoard({ x: this.item.x, y: this.item.y, r: this.item.r });
+            this.generateItem();
+        }
+        this.placeItemOnBoard({ x: this.item.x, y: this.item.y + 1, r: this.item.r });
     }
 
     moveItemRight = () => {
-        this.placeItemOnBoard({x: this.item.x + 1, y: this.item.y, r: this.item.r});
+        if (this.checkCollision({ x: this.item.x + 1, y: this.item.y, r: this.item.r })) {
+            this.placeItemOnBoard({ x: this.item.x, y: this.item.y, r: this.item.r });
+            return
+        }
+        this.placeItemOnBoard({ x: this.item.x + 1, y: this.item.y, r: this.item.r });
     }
 
     moveItemLeft = () => {
-        this.placeItemOnBoard({x: this.item.x - 1, y: this.item.y, r: this.item.r});
+        if (this.checkCollision({ x: this.item.x - 1, y: this.item.y, r: this.item.r })) {
+            this.placeItemOnBoard({ x: this.item.x, y: this.item.y, r: this.item.r });
+            return
+        }
+        this.placeItemOnBoard({ x: this.item.x - 1, y: this.item.y, r: this.item.r });
     }
 }

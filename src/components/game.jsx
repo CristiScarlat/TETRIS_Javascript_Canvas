@@ -18,8 +18,7 @@ export default class Game extends React.Component {
         document.addEventListener('keypress', this.handleKeypress);
         document.addEventListener('keydown', this.handleKeypress);
         this.canvas = this.refs.canvas;
-        this.tetris.generateItem();
-        this.tetris.placeItemOnBoard({x: 0, y: 0, r: 0});  
+        this.tetris.generateItem();  
         this.startLoop();
     }
     componentWillUnmount(){
@@ -57,7 +56,25 @@ export default class Game extends React.Component {
                 context.fillStyle = "white";
                 break;
                 case 1:
-                context.fillStyle = "#616365";
+                context.fillStyle = "#622362";
+                break;
+                case 2:
+                context.fillStyle = "#616333";
+                break;
+                case 3:
+                context.fillStyle = "#622333";
+                break;
+                case 4:
+                context.fillStyle = "#611333";
+                break;
+                case 5:
+                context.fillStyle = "#622344";
+                break;
+                case 6:
+                context.fillStyle = "#422333";
+                break;
+                case 7:
+                context.fillStyle = "#522333";
                 break;
                 default:
                 context.fillStyle = "black";
