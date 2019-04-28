@@ -36,11 +36,11 @@ export default class Game extends React.Component {
         this.tetris.gameBoard.forEach((row, index) => {
             this.drawRect(ctx, row, index);
         }) 
-        this.step(120);
+        this.fall(120);
         requestAnimationFrame(this.update);     
     }
 
-    step = (timestamp) => {
+    fall = (timestamp) => {
         this.start++;
         let progress = timestamp - this.start;
         if (progress  === 0) {
@@ -93,6 +93,9 @@ export default class Game extends React.Component {
                 break;
             case "ArrowLeft":
                 this.tetris.moveItemLeft();
+                break;
+            case "ArrowUp":
+                this.tetris.rotateItem();
                 break;
             default:
                 break;
