@@ -54,7 +54,7 @@ export class Tetris {
             })
             return bottomElem;
         }
-        shape.map((raw, index) => {
+        shape.forEach((raw, index) => {
             if(findBottomOfShape(raw)){
                 collition = position.y + index - 1 >= this.gameBoard.length-1;
             }
@@ -69,7 +69,8 @@ export class Tetris {
         shape.forEach((row, index) => {
             for (let col = 0; col < row.length; col++) {
                 if (row[col] > 0) {
-                    collision |= (this.gameBoard[index + position.y][col + position.x] > 0) || col + position.x < 0 || col + position.x > this.gameBoard[0].length-1;
+                    collision |= (this.gameBoard[index + position.y][col + position.x] > 0) || col + position.x < 0 || 
+                    col + position.x > this.gameBoard[0].length-1;
                 }
             }
         })         
